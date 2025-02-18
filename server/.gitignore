@@ -1,0 +1,4 @@
+audio.wav
+separated_audio/
+.venv/
+__pycache__/
