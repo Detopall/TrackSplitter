@@ -14,6 +14,9 @@ function AudioPlayer({ file }: AudioPlayerProps) {
 
 	useEffect(() => {
 		if (waveformRef.current) {
+			// Append a timestamp to the URL to avoid caching
+			const noCacheUrl = `${file.url}?t=${new Date().getTime()}`;
+
 			wavesurfer.current = WaveSurfer.create({
 				container: waveformRef.current,
 				waveColor: "#ddd",
@@ -24,7 +27,7 @@ function AudioPlayer({ file }: AudioPlayerProps) {
 				height: 100,
 			});
 
-			wavesurfer.current.load(file.url);
+			wavesurfer.current.load(noCacheUrl);
 
 			wavesurfer.current.on("finish", () => setIsPlaying(false));
 		}
@@ -47,6 +50,7 @@ function AudioPlayer({ file }: AudioPlayerProps) {
 		link.remove();
 		setIsPlaying(false);
 	};
+
 	return (
 		<div className="mb-4 p-4 rounded-lg shadow-md">
 			<h3 className="text-lg font-semibold mb-2">{file.filename}</h3>

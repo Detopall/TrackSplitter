@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from main import generate_separation
+from main import generate_separation, remove_all_separated_audio
 
 app = FastAPI()
 
@@ -27,6 +27,7 @@ async def convert(request: ConvertRequest):
     """
     Convert YouTube audio and return the list of available audio file URLs.
     """
+    remove_all_separated_audio(SEPARATED_AUDIO_DIR)
     url = request.url
 
     generate_separation(url)

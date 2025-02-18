@@ -112,3 +112,19 @@ def generate_separation(yt_link: str) -> None:
 
         print(f"Processing {audio_file_path}")
         separate_and_download(audio_file_path)
+
+def remove_all_separated_audio(SEPARATED_AUDIO_DIR: str):
+    """
+    This function ensures that no audio files are left in the separated_audio directory. This is needed because the program will automatically create endpoints pointing to the files in this directory, without checking if they are new or not.
+    """
+
+    for file in os.listdir(SEPARATED_AUDIO_DIR):
+        os.remove(os.path.join(SEPARATED_AUDIO_DIR, file))
+
+    # Remove the audio.wav file
+    if os.path.exists("audio.wav"):
+        os.remove("audio.wav")
+
+    os.rmdir(SEPARATED_AUDIO_DIR)
+
+    os.mkdir(SEPARATED_AUDIO_DIR)

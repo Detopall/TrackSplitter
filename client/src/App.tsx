@@ -46,7 +46,9 @@ function App() {
 	};
 
 	return (
-		<main className={`green-${theme} text-foreground bg-background w-full overflow-x-hidden`}>
+		<main
+			className={`green-${theme} text-foreground bg-background w-full overflow-x-hidden`}
+		>
 			<div className="flex flex-col">
 				<div className="flex flex-col items-end py-4">
 					<Switch

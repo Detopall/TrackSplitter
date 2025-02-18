@@ -3,14 +3,18 @@ import { saveAs } from "file-saver";
 import { Button } from "@heroui/button";
 import AudioPlayer from "@/components/AudioPlayer";
 
-interface ConvertAudioProps {
-	audioFiles: { filename: string; url: string }[];
+interface AudioFile {
+	filename: string;
+	url: string;
 }
 
-function ConvertAudio({ audioFiles }: ConvertAudioProps) {
+interface ConvertAudioProps {
+	audioFiles: AudioFile[];
+}
+
+const ConvertAudio = ({ audioFiles }: ConvertAudioProps) => {
 	const downloadAllAsZip = async () => {
 		const zip = new JSZip();
-
 		const downloadPromises = audioFiles.map(async (file) => {
 			const response = await fetch(file.url);
 			const blob = await response.blob();
@@ -45,6 +49,6 @@ function ConvertAudio({ audioFiles }: ConvertAudioProps) {
 			)}
 		</>
 	);
-}
+};
 
 export default ConvertAudio;
