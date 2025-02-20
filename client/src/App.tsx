@@ -19,7 +19,7 @@ function App() {
 		setVideoUrl(e.target.value);
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		const id = extractVideoId(videoUrl);
 		if (id) {
 			setVideoId(id);

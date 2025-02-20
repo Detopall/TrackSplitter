@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 
@@ -5,8 +6,8 @@ interface LoadVideoProps {
 	videoId: string;
 	videoUrl: string;
 	handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-	handleConversion: () => void;
-	handleSubmit: () => void;
+	handleConversion: () => Promise<void>;
+	handleSubmit: () => Promise<void>;
 }
 
 function LoadVideo({
@@ -16,6 +17,21 @@ function LoadVideo({
 	handleConversion,
 	handleSubmit,
 }: LoadVideoProps) {
+	const [_, setLoadingSubmit] = useState(false);
+	const [loadingConvert, setLoadingConvert] = useState(false);
+
+	const onSubmit = async () => {
+		setLoadingSubmit(true);
+		await handleSubmit();
+		setLoadingSubmit(false);
+	};
+
+	const onConvert = async () => {
+		setLoadingConvert(true);
+		await handleConversion();
+		setLoadingConvert(false);
+	};
+
 	return (
 		<>
 			<div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -30,7 +46,11 @@ function LoadVideo({
 				/>
 			</div>
 			<div className="mt-4 flex justify-center mb-5">
-				<Button color="danger" variant="shadow" onPress={handleSubmit}>
+				<Button
+					color="danger"
+					variant="shadow"
+					onPress={onSubmit}
+				>
 					Load Video
 				</Button>
 			</div>
@@ -48,8 +68,14 @@ function LoadVideo({
 						></iframe>
 					</div>
 					<div className="mt-4 flex justify-center">
-						<Button color="primary" variant="shadow" onPress={handleConversion}>
-							Convert Video
+						<Button
+							color="primary"
+							variant="shadow"
+							onPress={onConvert}
+							disabled={loadingConvert}
+							isLoading={loadingConvert}
+						>
+							{loadingConvert ? "Converting..." : "Convert Audio"}
 						</Button>
 					</div>
 				</>
