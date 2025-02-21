@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ConvertAudio from "@/components/ConvertAudio";
 import LoadVideo from "@/components/LoadVideo";
 import Header from "./components/Header";
@@ -11,15 +11,15 @@ function App() {
 	const { theme, toggleTheme } = useTheme();
 	const [videoUrl, setVideoUrl] = useState("");
 	const [videoId, setVideoId] = useState("");
-	const [audioFiles, setAudioFiles] = useState<
-		{ filename: string; url: string }[]
-	>([]);
+	const [audioFiles, setAudioFiles] = useState<{ filename: string; url: string }[]>([]);
+	const isFetching = useRef(false);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setVideoUrl(e.target.value);
 	};
 
 	const handleSubmit = async () => {
+		setAudioFiles([]);
 		const id = extractVideoId(videoUrl);
 		if (id) {
 			setVideoId(id);
@@ -27,14 +27,17 @@ function App() {
 	};
 
 	const extractVideoId = (url: string) => {
-		const regExp =
-			/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 		const match = url.match(regExp);
 		return match && match[2].length === 11 ? match[2] : null;
 	};
 
 	const handleConversion = async () => {
-		if (videoId) {
+		setAudioFiles([]);
+		if (!videoId || isFetching.current) return;
+		isFetching.current = true;
+
+		try {
 			const response = await fetch("http://localhost:8000/convert", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -42,13 +45,15 @@ function App() {
 			});
 			const data = await response.json();
 			setAudioFiles(data.files || []);
+		} catch (error) {
+			console.error("Conversion failed:", error);
+		} finally {
+			isFetching.current = false;
 		}
 	};
 
 	return (
-		<main
-			className={`green-${theme} text-foreground bg-background w-full overflow-x-hidden`}
-		>
+		<main className={`green-${theme} text-foreground bg-background w-full overflow-x-hidden`}>
 			<div className="flex flex-col">
 				<div className="flex flex-col items-end py-4">
 					<Switch
@@ -70,7 +75,6 @@ function App() {
 						handleInputChange={handleInputChange}
 						handleSubmit={handleSubmit}
 					/>
-
 					<ConvertAudio audioFiles={audioFiles} />
 				</div>
 			</div>
