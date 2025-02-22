@@ -1,34 +1,52 @@
 #!/bin/bash
 
-CONTAINER_NAME="tracksplitter-container"
-IMAGE_NAME="tracksplitter"
+COMPOSE_FILE="docker-compose.yaml"
 
 show_help() {
     echo "Usage: $0 [OPTION]"
-    echo "Manage the Docker container for TrackSplitter."
+    echo "Manage the Docker Compose services for TrackSplitter."
     echo
     echo "Options:"
     echo "  --help                Show this help message and exit."
-    echo "  --stop                Stop the running container if it exists."
-    echo "  --remove-container    Stop and remove the container."
-    echo "  --remove-all          Stop and remove the container, then remove the image."
-    echo "  (no option)           Start the container (builds if necessary)."
+    echo "  --stop                Stop the running containers."
+    echo "  --remove-container    Stop and remove all containers."
+    echo "  --remove-all          Stop and remove all containers, then remove images."
+    echo "  --logs                View logs of running services."
+    echo "  (no option)           Start the services (builds if necessary)."
 }
 
-start_container() {
-    if [[ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]]; then
-        echo "Container '$CONTAINER_NAME' already exists. Starting it..."
-        docker start $CONTAINER_NAME
-    else
-        echo "Building Docker image..."
-        docker build -t $IMAGE_NAME .
-        echo "Starting Docker container..."
-        docker run -it -d -p 8000:8000 -p 5173:5173 --name $CONTAINER_NAME $IMAGE_NAME
-    fi
+start_services() {
+    echo "Starting services..."
+    docker compose -f $COMPOSE_FILE up -d --build
 
     echo "Waiting for the application to start..."
-    sleep 10
+    sleep 5
 
+    open_browser
+}
+
+stop_services() {
+    echo "Stopping services..."
+    docker compose -f $COMPOSE_FILE stop
+}
+
+remove_containers() {
+    echo "Removing containers..."
+    docker compose -f $COMPOSE_FILE down
+}
+
+remove_all() {
+    echo "Removing all containers and images..."
+    docker compose -f $COMPOSE_FILE down --rmi all
+}
+
+view_logs() {
+    echo "Displaying logs..."
+    docker compose -f $COMPOSE_FILE logs -f
+}
+
+open_browser() {
+    echo "Opening application in browser..."
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         xdg-open "http://localhost:5173/"
     elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
@@ -40,41 +58,23 @@ start_container() {
     fi
 }
 
-stop_container() {
-    if [[ "$(docker ps -q -f name=$CONTAINER_NAME)" ]]; then
-        echo "Stopping container '$CONTAINER_NAME'..."
-        docker stop $CONTAINER_NAME
-    else
-        echo "Container '$CONTAINER_NAME' is not running."
-    fi
-}
-
-remove_container() {
-    stop_container
-    echo "Removing container '$CONTAINER_NAME'..."
-    docker rm $CONTAINER_NAME
-}
-
-remove_all() {
-    remove_container
-    echo "Removing image '$IMAGE_NAME'..."
-    docker rmi $IMAGE_NAME
-}
-
 case "$1" in
     --help)
         show_help
         ;;
     --stop)
-        stop_container
+        stop_services
         ;;
     --remove-container)
-        remove_container
+        remove_containers
         ;;
     --remove-all)
         remove_all
         ;;
+    --logs)
+        view_logs
+        ;;
     *)
-        start_container
+        start_services
         ;;
 esac

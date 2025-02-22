@@ -43,6 +43,3 @@ WORKDIR /app/server
 # Expose server and client ports
 EXPOSE 8000
 EXPOSE 5173
-
-# Command to run the server and client together
-CMD ["/bin/bash", "-c", "/app/.venv/bin/python /app/server/server.py & cd /app/client && npm run dev -- --host 0.0.0.0 --port 5173"]

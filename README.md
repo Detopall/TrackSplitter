@@ -11,6 +11,7 @@ TrackSplitter allows you to separate the audio sources of a YouTube video (vocal
     - [Stop](#stop)
     - [Remove Container](#remove-container)
     - [Remove Image](#remove-image)
+    - [Logs](#logs)
     - [Help](#help)
   - [Server](#server)
   - [Client](#client)
@@ -29,11 +30,12 @@ TrackSplitter allows you to separate the audio sources of a YouTube video (vocal
 
 ## Installation
 
+
 ### Docker
 
 Execute the following command:
 
-Make sure the bash script has the right permission by running chmod +x run.sh
+Make sure the bash script has the right permission by running `chmod u+x run.sh`
 
 #### Run
 
@@ -41,9 +43,9 @@ Make sure the bash script has the right permission by running chmod +x run.sh
 ./run.sh
 ```
 
-- Build the Docker image (if not already built)
-- Run the container (if it isn't already running)
-- Open the app in your default web browser at `http://localhost:5173/`
+- Builds the Docker image (if not already built)
+- Runs the containers (using docker compose, if it isn't already running)
+- Opens the app in your default web browser at `http://localhost:5173/`
 
 #### Stop
 
@@ -51,7 +53,7 @@ Make sure the bash script has the right permission by running chmod +x run.sh
 ./run.sh --stop
 ```
 
-- Stop the running container
+- Stops the running containers
 
 #### Remove Container
 
@@ -59,8 +61,8 @@ Make sure the bash script has the right permission by running chmod +x run.sh
 ./run.sh --remove-container
 ```
 
-- Stops the running container (if not already stopped)
-- Remove the container
+- Stops the running containers (if not already stopped)
+- Removes the containers
 
 #### Remove Image
 
@@ -68,9 +70,17 @@ Make sure the bash script has the right permission by running chmod +x run.sh
 ./run.sh --remove-all
 ```
 
-- Stops the running container (if not already stopped)
-- Remove the container
-- Remove the Docker image
+- Stops the running containers (if not already stopped)
+- Removes the containers
+- Removes the Docker image
+
+#### Logs
+
+```bash
+./run.sh --logs
+```
+
+- Shows logs of the running containers
 
 #### Help
 
@@ -79,6 +89,12 @@ Make sure the bash script has the right permission by running chmod +x run.sh
 ```
 
 - Print the help message containing info about the available options
+
+To run it yourself using Docker, you can run the following commands:
+
+```bash
+docker compose -f docker-compose.yaml up -d --build
+```
 
 You can also individually run the server and client in the next two sections.
 
